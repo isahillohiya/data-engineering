@@ -21,7 +21,7 @@ c. Calculate the total sales for each quarter </br>
 d. In which quarter sales was minimum </br>
 e. In which country sales was maximum and in which country sales was minimum </br>
 f. Calculate quartelry sales for each city </br>
-h. Find a month for each year in which maximum number of quantities were sold
+g. Find a month for each year in which maximum number of quantities were sold
 
 
 ## PRACTICAL STEPS :
@@ -67,9 +67,9 @@ create table sales_order_csv
 (
 ORDERNUMBER int,
 QUANTITYORDERED int,
-PRICEEACH float,
+PRICEEACH decimal(10,2),
 ORDERLINENUMBER int,
-SALES double,
+SALES decimal(10,2),
 STATUS string,
 QTR_ID int,
 MONTH_ID int,
@@ -106,9 +106,9 @@ create table sales_order_orc
 (
 ORDERNUMBER int,
 QUANTITYORDERED int,
-PRICEEACH float,
+PRICEEACH decimal(10,2),
 ORDERLINENUMBER int,
-SALES double,
+SALES decimal(10,2),
 STATUS string,
 QTR_ID int,
 MONTH_ID int,
@@ -144,62 +144,69 @@ A.  Calculatye total sales per year
 
 
 ``` 
-select  YEAR_ID as year ,
-        sum(SALES) as  total_sales 
-from sales_order_orc 
-group by YEAR_ID;
+  select  YEAR_ID as year ,
+          sum(SALES) as  total_sales 
+  from sales_order_orc 
+  group by YEAR_ID;
 ```
+-> <b>Total sales is shown Below:</b>
+![hive query in hue](media/A.png)
 
 B. Find a product for which maximum orders were placed
 
 ```
-select  PRODUCTLINE,
+select  PRODUCTLINE as maximum_ordered_product,
         sum(QUANTITYORDERED) as total_quantity  
 from sales_order_orc 
 group by PRODUCTLINE  
 order by total_quantity desc 
 limit 1;
 ```
+--> <b>Classic Cars</b> is product for which maximum orders are places </br>
 
+![hive query in hue](media/B.png)
 
 C. Calculate the total sales for each quarter
 
 
 ```
-select quater,sum(sales)  as total_sales
+select quarter,sum(sales)  as total_sales
 from 
 ( select case
       when MONTH_ID >3 and MONTH_ID < 7 then "Q1"
       when month_id >6 and month_id < 10 then 'Q2'
       when month_id >9 and month_id <13 then 'Q3'
       else 'Q4' 
-      end as quater,
+      end as quarter,
       sales
   from sales_order_orc
 ) t1 
-group by quater ;
-
-
+group by quarter ;
 ```
+-> <b>Totla quarterly sales is shown below</b>
+
+![hive query in hue](media/C.png)
 
 D. In which quarter sales was minimum </br>
 
 ```
-select quater,sum(sales)  as total_sales
+select quarter,sum(sales)  as total_sales
 from 
 ( select case
       when MONTH_ID >3 and MONTH_ID < 7 then "Q1"
       when month_id >6 and month_id < 10 then 'Q2'
       when month_id >9 and month_id <13 then 'Q3'
       else 'Q4' 
-      end as quater,
+      end as quarter,
       sales
   from sales_order_orc
 ) t1 
-group by quater
+group by quarter
 order by total_sales  
 limit 1;
 ```
+--> <b>Quarter 2</b> had minimum sales:
+![hive query in hue](media/D.png)
 
 E. In which country sales was maximum and in which country sales was minimum
 
@@ -219,32 +226,39 @@ group by COUNTRY
 order by total_sales desc limit 1 ;
 
 ```
+-> <b>Ireland</b> had minimum sales </br>
+-> <b>USA</b> had maximum sales
+![hive query in hue](media/E.png)
+
+</br>
 
 F. Calculate quartelry sales for each city
 ```
-select city,quater,sum(sales) as total_sales
+select city,quarter,sum(sales) as total_sales
 from 
 ( select city, case
       when MONTH_ID >3 and MONTH_ID < 7 then "Q1"
       when month_id >6 and month_id < 10 then 'Q2'
       when month_id >9 and month_id <13 then 'Q3'
       else 'Q4' 
-      end as quater,
+      end as quarter,
       sales
   from sales_order_orc
 ) t1 
-group by city,quater
-order by city,quater;
+group by city,quarter
+order by city,quarter;
 
 ```
+-> <b>quartelry sales for each city is shown below </b>
+![hive query in hue](media/F.png)
 
-H. Find a month for each year in which maximum number of quantities were sold
+g. Find a month for each year in which maximum number of quantities were sold
 
 ```
 select year_id,
        month_id, 
-       total_sales,
-       rankss 
+       total_sales
+ 
 from
 (   select  year_id,
             month_id,
@@ -258,7 +272,6 @@ from
           ) t1 
 ) t2
 where rankss = 1;
-
-
-
 ```
+-> Month <b>11,11 and 5</b> had manimum number sales for year <b>2003,2004 and 2005 </b>respective.
+![hive query in hue](media/G.png)
