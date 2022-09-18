@@ -170,18 +170,10 @@ C. Calculate the total sales for each quarter
 
 
 ```
-select quarter,sum(sales)  as total_sales
-from 
-( select case
-      when MONTH_ID >3 and MONTH_ID < 7 then "Q1"
-      when month_id >6 and month_id < 10 then 'Q2'
-      when month_id >9 and month_id <13 then 'Q3'
-      else 'Q4' 
-      end as quarter,
-      sales
-  from sales_order_orc
-) t1 
-group by quarter ;
+select CONCAT('Quarter ',qtr_id) as quarter,
+       sum(sales) as total_sales
+from sales_order_orc
+group by qtr_id ; 
 ```
 -> <b>Totla quarterly sales is shown below</b>
 
@@ -190,18 +182,10 @@ group by quarter ;
 D. In which quarter sales was minimum </br>
 
 ```
-select quarter,sum(sales)  as total_sales
-from 
-( select case
-      when MONTH_ID >3 and MONTH_ID < 7 then "Q1"
-      when month_id >6 and month_id < 10 then 'Q2'
-      when month_id >9 and month_id <13 then 'Q3'
-      else 'Q4' 
-      end as quarter,
-      sales
-  from sales_order_orc
-) t1 
-group by quarter
+select CONCAT('Quarter ',qtr_id) AS min_sales_quarter ,
+       sum(sales)  AS total_sales
+from sales_order_orc
+group by qtr_id
 order by total_sales  
 limit 1;
 ```
@@ -234,19 +218,11 @@ order by total_sales desc limit 1 ;
 
 F. Calculate quartelry sales for each city
 ```
-select city,quarter,sum(sales) as total_sales
-from 
-( select city, case
-      when MONTH_ID >3 and MONTH_ID < 7 then "Q1"
-      when month_id >6 and month_id < 10 then 'Q2'
-      when month_id >9 and month_id <13 then 'Q3'
-      else 'Q4' 
-      end as quarter,
-      sales
-  from sales_order_orc
-) t1 
-group by city,quarter
-order by city,quarter;
+select  city,CONCAT('Quarter ',qtr_id) as Quarter,
+        sum(sales) as total_sales
+from  sales_order_orc 
+group by city,qtr_id
+order by city,Quarter;
 
 ```
 -> <b>quartelry sales for each city is shown below </b>
