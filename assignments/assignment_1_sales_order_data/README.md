@@ -241,7 +241,7 @@ from
             total_sales,dense_rank() over (partition by year_id order by total_sales desc) as rankss 
     from (  select  YEAR_ID,
                     month_id,
-                    sum(sales) as total_sales 
+                    sum(QUANTITYORDERED) as total_sales 
             from sales_order_orc 
             group by YEAR_ID,
                   month_id
